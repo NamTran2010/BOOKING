@@ -1,10 +1,10 @@
 import {
   faBed,
-  faPlane,
-  faCar,
-  faTaxi,
   faCalendarDays,
+  faCar,
   faPerson,
+  faPlane,
+  faTaxi,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.css";
@@ -13,8 +13,10 @@ import { useState } from "react";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ type }) => {
+  const [destination, setDestination] = useState("");
   const [openDate, setOpenDate] = useState(false);
   const [date, setDate] = useState([
     {
@@ -30,6 +32,8 @@ const Header = ({ type }) => {
     room: 1,
   });
 
+  const navigate = useNavigate();
+
   const handleOption = (name, operation) => {
     setOptions((prev) => {
       return {
@@ -37,6 +41,10 @@ const Header = ({ type }) => {
         [name]: operation === "i" ? options[name] + 1 : options[name] - 1,
       };
     });
+  };
+
+  const handleSearch = () => {
+    navigate("/hotels", { state: { destination, date, options } });
   };
 
   return (
@@ -53,7 +61,7 @@ const Header = ({ type }) => {
           </div>
           <div className="headerListItem">
             <FontAwesomeIcon icon={faPlane} />
-            <span>Flight</span>
+            <span>Flights</span>
           </div>
           <div className="headerListItem">
             <FontAwesomeIcon icon={faCar} />
@@ -65,33 +73,31 @@ const Header = ({ type }) => {
           </div>
           <div className="headerListItem">
             <FontAwesomeIcon icon={faTaxi} />
-            <span>Airport Taxis</span>
+            <span>Airport taxis</span>
           </div>
         </div>
         {type !== "list" && (
           <>
             <h1 className="headerTitle">
-              A lifetime of discounts? It's Genius
+              A lifetime of discounts? It's Genius.
             </h1>
             <p className="headerDesc">
-              Get rewarded for your travels - unlock instant savings of 10% or
+              Get rewarded for your travels – unlock instant savings of 10% or
               more with a free Lamabooking account
             </p>
-            <button className="headerBtn">Sign In / Register </button>
+            <button className="headerBtn">Sign in / Register</button>
             <div className="headerSearch">
               <div className="headerSearchItem">
-                <FontAwesomeIcon icon={faBed} className="headerSearchIcon" />
+                <FontAwesomeIcon icon={faBed} className="headerIcon" />
                 <input
                   type="text"
-                  placeholder="Where are you going"
+                  placeholder="Where are you going?"
                   className="headerSearchInput"
+                  onChange={(e) => setDestination(e.target.value)}
                 />
               </div>
               <div className="headerSearchItem">
-                <FontAwesomeIcon
-                  icon={faCalendarDays}
-                  className="headerSearchIcon"
-                />
+                <FontAwesomeIcon icon={faCalendarDays} className="headerIcon" />
                 <span
                   onClick={() => setOpenDate(!openDate)}
                   className="headerSearchText"
@@ -106,15 +112,16 @@ const Header = ({ type }) => {
                     moveRangeOnFirstSelection={false}
                     ranges={date}
                     className="date"
+                    minDate={new Date()}
                   />
                 )}
               </div>
               <div className="headerSearchItem">
-                <FontAwesomeIcon icon={faPerson} className="headerSearchIcon" />
+                <FontAwesomeIcon icon={faPerson} className="headerIcon" />
                 <span
                   onClick={() => setOpenOptions(!openOptions)}
                   className="headerSearchText"
-                >{`${options.adult} adult . ${options.children} children . ${options.room} room`}</span>
+                >{`${options.adult} adult · ${options.children} children · ${options.room} room`}</span>
                 {openOptions && (
                   <div className="options">
                     <div className="optionItem">
@@ -184,7 +191,9 @@ const Header = ({ type }) => {
                 )}
               </div>
               <div className="headerSearchItem">
-                <button className="headerBtn">Search</button>
+                <button className="headerBtn" onClick={handleSearch}>
+                  Search
+                </button>
               </div>
             </div>
           </>
